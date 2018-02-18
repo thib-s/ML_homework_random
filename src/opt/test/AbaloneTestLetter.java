@@ -14,15 +14,15 @@ import java.text.*;
 /**
  * Implementation of randomized hill climbing, simulated annealing, and genetic algorithm to
  * find optimal weights to a neural network that is classifying abalone as having either fewer 
- * or more than 15 rings. 
+ * or more than 15 rings.
  *
  * @author Hannah Lau
  * @version 1.0
  */
-public class AbaloneTest {
+public class AbaloneTestLetter {
+	private static double lnr;
     private static Instance[] instances = initializeInstances();
-
-    private static int inputLayer = 7, hiddenLayer = 5, outputLayer = 1, trainingIterations = 1000;
+    private static int inputLayer = 16, hiddenLayer = 5, outputLayer = 1, trainingIterations = 1000;
     private static BackPropagationNetworkFactory factory = new BackPropagationNetworkFactory();
     
     private static ErrorMeasure measure = new SumOfSquaresError();
@@ -84,6 +84,7 @@ public class AbaloneTest {
         System.out.println(results);
     }
 
+    
     private static void train(OptimizationAlgorithm oa, BackPropagationNetwork network, String oaName) {
         System.out.println("\nError results for " + oaName + "\n---------------------------");
 
@@ -105,21 +106,22 @@ public class AbaloneTest {
     }
 
     private static Instance[] initializeInstances() {
-
-        double[][][] attributes = new double[4177][][];
+    	
+//        double[][][] attributes = new double[4177][][];
+    double[][][] attributes = new double[19999][][];
 
         try {
-            BufferedReader br = new BufferedReader(new FileReader(new File("/Users/jacquelineroudes/Documents/GTL_courses/Machine_Learning/Homework2/ABAGAIL/src/opt/test/diabetes.txt")));
+            BufferedReader br = new BufferedReader(new FileReader(new File("/Users/jacquelineroudes/Documents/GTL_courses/Machine_Learning/Homework2/ABAGAIL/src/opt/test/letter_recognition.txt")));
 
             for(int i = 0; i < attributes.length; i++) {
                 Scanner scan = new Scanner(br.readLine());
                 scan.useDelimiter(",");
 
                 attributes[i] = new double[2][];
-                attributes[i][0] = new double[7]; // 7 attributes
+                attributes[i][0] = new double[16]; // 7 attributes
                 attributes[i][1] = new double[1];
 
-                for(int j = 0; j < 7; j++)
+                for(int j = 0; j < 16; j++)
                     attributes[i][0][j] = Double.parseDouble(scan.next());
 
                 attributes[i][1][0] = Double.parseDouble(scan.next());
@@ -129,14 +131,15 @@ public class AbaloneTest {
             e.printStackTrace();
         }
 
-        Instance[] instances = new Instance[attributes.length];
+       Instance[] instances = new Instance[attributes.length];
 
         for(int i = 0; i < instances.length; i++) {
             instances[i] = new Instance(attributes[i][0]);
             // classifications range from 0 to 30; split into 0 - 14 and 15 - 30
-            instances[i].setLabel(new Instance(attributes[i][1][0] < 15 ? 0 : 1));
+            instances[i].setLabel(new Instance(attributes[i][1][0] < 13 ? 0 : 1));
         }
 
         return instances;
+
     }
 }

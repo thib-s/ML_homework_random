@@ -19,10 +19,11 @@ import java.text.*;
  * @author Hannah Lau
  * @version 1.0
  */
-public class AbaloneTest {
+public class AbaloneTestDiabetes {
+	private static String outputDir = "./OptimizationResults";
+	private static double lnr;
     private static Instance[] instances = initializeInstances();
-
-    private static int inputLayer = 7, hiddenLayer = 5, outputLayer = 1, trainingIterations = 1000;
+    private static int inputLayer = 8, hiddenLayer = 5, outputLayer = 1, trainingIterations = 1000;
     private static BackPropagationNetworkFactory factory = new BackPropagationNetworkFactory();
     
     private static ErrorMeasure measure = new SumOfSquaresError();
@@ -46,7 +47,7 @@ public class AbaloneTest {
         }
 
         oa[0] = new RandomizedHillClimbing(nnop[0]);
-        oa[1] = new SimulatedAnnealing(1E11, .95, nnop[1]);
+        oa[1] = new SimulatedAnnealing(100, .95, nnop[1]);
         oa[2] = new StandardGeneticAlgorithm(200, 100, 10, nnop[2]);
 
         for(int i = 0; i < oa.length; i++) {
@@ -79,11 +80,13 @@ public class AbaloneTest {
                         "\nIncorrectly classified " + incorrect + " instances.\nPercent correctly classified: "
                         + df.format(correct/(correct+incorrect)*100) + "%\nTraining time: " + df.format(trainingTime)
                         + " seconds\nTesting time: " + df.format(testingTime) + " seconds\n";
+            
         }
-
+        Utils.writeOutputToFile(outputDir, "DiabetesTest" + ".csv", results);
         System.out.println(results);
     }
 
+    
     private static void train(OptimizationAlgorithm oa, BackPropagationNetwork network, String oaName) {
         System.out.println("\nError results for " + oaName + "\n---------------------------");
 
@@ -105,8 +108,9 @@ public class AbaloneTest {
     }
 
     private static Instance[] initializeInstances() {
-
-        double[][][] attributes = new double[4177][][];
+    	
+//        double[][][] attributes = new double[4177][][];
+    double[][][] attributes = new double[767][][];
 
         try {
             BufferedReader br = new BufferedReader(new FileReader(new File("/Users/jacquelineroudes/Documents/GTL_courses/Machine_Learning/Homework2/ABAGAIL/src/opt/test/diabetes.txt")));
@@ -116,10 +120,10 @@ public class AbaloneTest {
                 scan.useDelimiter(",");
 
                 attributes[i] = new double[2][];
-                attributes[i][0] = new double[7]; // 7 attributes
+                attributes[i][0] = new double[8]; // 7 attributes
                 attributes[i][1] = new double[1];
 
-                for(int j = 0; j < 7; j++)
+                for(int j = 0; j < 8; j++)
                     attributes[i][0][j] = Double.parseDouble(scan.next());
 
                 attributes[i][1][0] = Double.parseDouble(scan.next());
@@ -129,14 +133,15 @@ public class AbaloneTest {
             e.printStackTrace();
         }
 
-        Instance[] instances = new Instance[attributes.length];
+       Instance[] instances = new Instance[attributes.length];
 
         for(int i = 0; i < instances.length; i++) {
             instances[i] = new Instance(attributes[i][0]);
             // classifications range from 0 to 30; split into 0 - 14 and 15 - 30
-            instances[i].setLabel(new Instance(attributes[i][1][0] < 15 ? 0 : 1));
+            instances[i].setLabel(new Instance(attributes[i][1][0] < 1 ? 0 : 1));
         }
 
         return instances;
+
     }
 }
