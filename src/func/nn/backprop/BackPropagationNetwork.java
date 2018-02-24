@@ -22,7 +22,7 @@ public class BackPropagationNetwork extends FeedForwardNetwork {
 	}
 
 	/**
-     * Clear out the error values at the end of a batch
+     * Clear out the errors values at the end of a batch
 	 * or at the end of a single training for
      * stochastic / online training
 	 */

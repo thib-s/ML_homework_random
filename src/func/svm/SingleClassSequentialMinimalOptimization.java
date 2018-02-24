@@ -18,7 +18,7 @@ public class SingleClassSequentialMinimalOptimization implements Trainer {
     private static final double TOLERANCE = 1e-8;
     
     /**
-     * The error value
+     * The errors value
      */
     private static final double EPS = 1e-8;
     

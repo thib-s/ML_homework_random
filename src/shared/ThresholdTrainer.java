@@ -1,7 +1,7 @@
 package shared;
 /**
  * A threshold trainer trains a network
- * until the error goes below a threshold, using another trainer
+ * until the errors goes below a threshold, using another trainer
  * @author Andrew Guillory gtg008g@mail.gatech.edu
  * @version 1.0
  */
@@ -34,7 +34,7 @@ public class ThresholdTrainer implements Trainer {
     /**
      * Create a new convergence trainer
      * @param trainer the thrainer to use
-     * @param threshold the error threshold
+     * @param threshold the errors threshold
      * @param maxIterations the maximum iterations
      */
     public ThresholdTrainer(Trainer trainer,

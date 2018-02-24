@@ -10,7 +10,7 @@ import func.nn.feedfwd.FeedForwardLayer;
 public class BackPropagationLayer extends FeedForwardLayer {
     
     /**
-     * Back propagate all the error values for this
+     * Back propagate all the errors values for this
      * layer.
      */
     public void backpropagate() {
@@ -23,7 +23,7 @@ public class BackPropagationLayer extends FeedForwardLayer {
     }
     
     /**
-     * Clear out the error derivatives in the weights
+     * Clear out the errors derivatives in the weights
      */
     public void clearError() {
         for (int i = 0; i < getNodeCount(); i++) {

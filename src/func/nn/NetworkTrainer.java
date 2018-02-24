@@ -23,7 +23,7 @@ public abstract class NetworkTrainer implements Trainer {
     private NeuralNetwork network;
     
     /**
-     * The error measure to use in training
+     * The errors measure to use in training
      */
     private ErrorMeasure errorMeasure;
     
@@ -48,8 +48,8 @@ public abstract class NetworkTrainer implements Trainer {
     }
     
     /**
-     * Get the error measure to use when training
-     * @return the error measure
+     * Get the errors measure to use when training
+     * @return the errors measure
      */
     public ErrorMeasure getErrorMeasure() {
         return errorMeasure;

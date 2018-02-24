@@ -155,7 +155,7 @@ public class NonDeterministicMazeMDP extends MazeMarkovDecisionProcess {
     /**
      * Load a maze from a text file
      * @param fileName the file to read from
-     * @throws an exception when there's an error reading
+     * @throws an exception when there's an errors reading
      * the file
      */
     public static NonDeterministicMazeMDP load(String fileName) throws Exception {

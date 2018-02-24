@@ -1,16 +1,16 @@
 package shared;
 
 /**
- * An abstract error measure
+ * An abstract errors measure
  * @author Andrew Guillory gtg008g@mail.gatech.edu
  * @version 1.0
  */
 public abstract class AbstractErrorMeasure implements ErrorMeasure {
     /**
-     * Calculate the error between two data sets
+     * Calculate the errors between two data sets
      * @param a the first
      * @param b the second
-     * @return the error
+     * @return the errors
      */
     public double value(DataSet a, DataSet b) {
         double error = 0;

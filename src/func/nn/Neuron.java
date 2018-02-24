@@ -34,8 +34,8 @@ public class Neuron implements Serializable {
 	}
 
 	/**
-	 * Get the error value
-	 * @return the error
+	 * Get the errors value
+	 * @return the errors
 	 */
 	public double getActivation() {
 		return activation;

@@ -49,7 +49,7 @@ public class NeuralNetworkOptimizationProblem implements HillClimbingProblem, Ge
      * Make a new neural network optimization
      * @param examples the examples
      * @param network the neural network
-     * @param measure the error measure
+     * @param measure the errors measure
      */
     public NeuralNetworkOptimizationProblem(DataSet examples,
              NeuralNetwork network, ErrorMeasure measure) {

@@ -12,16 +12,16 @@ import func.nn.Link;
 public class BackPropagationLink extends Link {
 
     /**
-     * The derivative of the error function
+     * The derivative of the errors function
      * in respect to this node, or in the case
      * of batch training possibly the sum
-     * of derivative of the error functions for
+     * of derivative of the errors functions for
      * many patterns.
      */
     private double error;
     
     /**
-     * The last derivative of the error function
+     * The last derivative of the errors function
      * in respect to this node, sometimes
      * used in training algorithms that use
      * momentum type terms.
@@ -51,23 +51,23 @@ public class BackPropagationLink extends Link {
     }
     
     /**
-     * Backpropagate error values into this link
+     * Backpropagate errors values into this link
      */
     public void backpropagate() {
         addError(getInValue() * getOutError());
     }
     
     /**
-     * Add error to this link
-     * @param error the error to add
+     * Add errors to this link
+     * @param error the errors to add
      */
     public void addError(double error) {
         this.error += error;
     }
     
     /**
-     * Clear out the error and 
-     * set the current error to be the last error
+     * Clear out the errors and
+     * set the current errors to be the last errors
      */
     public void clearError() {
         lastError = error;
@@ -75,16 +75,16 @@ public class BackPropagationLink extends Link {
     }
     
     /**
-     * Get the error derivative with respect to this weight
-     * @return the error derivative value
+     * Get the errors derivative with respect to this weight
+     * @return the errors derivative value
      */
     public double getError() {
         return error;
     }
     
     /**
-     * Set the error
-     * @param error the error to set
+     * Set the errors
+     * @param error the errors to set
      */
     public void setError(double error) {
     	this.error = error;
@@ -99,8 +99,8 @@ public class BackPropagationLink extends Link {
     }
 
     /**
-     * Get the last error value
-     * @return the last error value
+     * Get the last errors value
+     * @return the last errors value
      */
     public double getLastError() {
         return lastError;
@@ -123,16 +123,16 @@ public class BackPropagationLink extends Link {
     }
     
     /**
-     * Get the output error
-     * @return the output error
+     * Get the output errors
+     * @return the output errors
      */
     public double getOutError() {
         return ((BackPropagationNode) getOutNode()).getInputError();
     }
     
     /**
-     * Get the weighted output error
-     * @return the output error times the weigh tof the link
+     * Get the weighted output errors
+     * @return the output errors times the weigh tof the link
      */
     public double getWeightedOutError() {
         return ((BackPropagationNode) getOutNode()).getInputError()
@@ -140,16 +140,16 @@ public class BackPropagationLink extends Link {
     }
     
     /**
-     * Get the input error
-     * @return the input error
+     * Get the input errors
+     * @return the input errors
      */
     public double getInError() {
         return ((BackPropagationNode) getInNode()).getInputError();
     }
 
     /**
-     * Get the weighted input error
-     * @return the weighted error
+     * Get the weighted input errors
+     * @return the weighted errors
      */
     public double getWeightedInError() {
         return ((BackPropagationNode) getInNode()).getInputError()

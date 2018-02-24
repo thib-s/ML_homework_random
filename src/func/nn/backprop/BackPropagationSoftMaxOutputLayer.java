@@ -2,7 +2,7 @@ package func.nn.backprop;
 
 /**
  * A soft max layer in a back propagation network
- * that can be used with a standard error measure
+ * that can be used with a standard errors measure
  * for multi class probability in the output layer
  * @author Andrew Guillory gtg008g@mail.gatech.edu
  * @version 1.0

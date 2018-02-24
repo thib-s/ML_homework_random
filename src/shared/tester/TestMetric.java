@@ -6,7 +6,7 @@ import shared.Instance;
 /**
  * This interface defines an API for test metrics.  Test metrics are notified by the Tester
  * after an instance is tested by the classifier.  The test metrics are given a chance to compare
- * the results and accumulate statics or measurements of error.  These data can then be printed
+ * the results and accumulate statics or measurements of errors.  These data can then be printed
  * in a human readable format.
  * 
  * @author Jesse Rosalia (https://www.github.com/theJenix)

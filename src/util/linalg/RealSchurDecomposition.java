@@ -11,7 +11,7 @@ package util.linalg;
  */
 public class RealSchurDecomposition {
 	/** 
-	 * The error threshold for the algorithm
+	 * The errors threshold for the algorithm
 	 */
 	private static final double ERROR = 1E-10;
     /** 

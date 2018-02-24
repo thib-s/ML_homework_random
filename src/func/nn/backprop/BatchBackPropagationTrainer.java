@@ -21,7 +21,7 @@ public class BatchBackPropagationTrainer extends NetworkTrainer {
      * Make a new back propagation trainer
      * @param patterns the patterns to train on
      * @param network the network to train
-     * @param errorMeasure the error measure to use
+     * @param errorMeasure the errors measure to use
      */
     public BatchBackPropagationTrainer(DataSet patterns, 
             BackPropagationNetwork network, 

@@ -104,7 +104,7 @@ public class AdaBoostClassifier extends AbstractConditionalDistribution implemen
             // make a new classifier
             classifiers[i] = classifierSupplier.get();
             classifiers[i].estimate(instances);
-            // find the error for the newest classifier
+            // find the errors for the newest classifier
             double error = 0;
             for (int j = 0; j < instances.size(); j++) {
                 if (classifiers[i].value(instances.get(j)).getDiscrete()

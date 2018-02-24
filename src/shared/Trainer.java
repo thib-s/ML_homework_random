@@ -10,7 +10,7 @@ import java.io.Serializable;
 public interface Trainer extends Serializable {
     /**
      * The train the whatever
-     * @return the error
+     * @return the errors
      */
     public abstract double train();
 }

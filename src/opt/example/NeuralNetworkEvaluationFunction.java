@@ -22,7 +22,7 @@ public class NeuralNetworkEvaluationFunction implements EvaluationFunction {
      */
     private DataSet examples;
     /**
-     * The error measure
+     * The errors measure
      */
     private ErrorMeasure measure;
     
@@ -30,7 +30,7 @@ public class NeuralNetworkEvaluationFunction implements EvaluationFunction {
      * Make a new neural network evaluation function
      * @param network the network
      * @param examples the examples
-     * @param measure the error measure
+     * @param measure the errors measure
      */
     public NeuralNetworkEvaluationFunction(NeuralNetwork network,
             DataSet examples, ErrorMeasure measure) {
@@ -46,14 +46,14 @@ public class NeuralNetworkEvaluationFunction implements EvaluationFunction {
         // set the links
         Vector weights = d.getData();
         network.setWeights(weights);
-        // calculate the error
+        // calculate the errors
         double error = 0;
         for (int i = 0; i < examples.size(); i++) {
             network.setInputValues(examples.get(i).getData());
             network.run();
             error += measure.value(new Instance(network.getOutputValues()), examples.get(i));
         }
-        // the fitness is 1 / error
+        // the fitness is 1 / errors
         return 1 / error;
     }
 

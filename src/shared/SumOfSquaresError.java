@@ -3,7 +3,7 @@ package shared;
 
 
 /**
- * Standard error measure, suitable for use with
+ * Standard errors measure, suitable for use with
  * linear output networks for regression, sigmoid
  * output networks for single class probability,
  * and soft max networks for multi class probabilities.

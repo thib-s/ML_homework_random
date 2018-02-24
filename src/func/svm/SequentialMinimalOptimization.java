@@ -18,7 +18,7 @@ public class SequentialMinimalOptimization implements Trainer {
     private static final double TOLERANCE = 1e-4;
     
     /**
-     * The error value
+     * The errors value
      */
     private static final double EPS = 1e-4;
     
@@ -62,7 +62,7 @@ public class SequentialMinimalOptimization implements Trainer {
     private double b;
     
     /**
-     * The error cache which is the real output
+     * The errors cache which is the real output
      * - the expected output for non bound examples
      * (examples whose a value is not 0 or c)
      */
@@ -89,7 +89,7 @@ public class SequentialMinimalOptimization implements Trainer {
         // as is the threshold
         b = 0;
         // all the instances are initially bound
-        // so the error caches is all zero as well
+        // so the errors caches is all zero as well
         e = new double[examples.size()];
         // set up the kernel
         kernel.clear();
@@ -192,7 +192,7 @@ public class SequentialMinimalOptimization implements Trainer {
             return false;
         }
         // first we look for a second choice index, i, to take a step with
-        // if ej is positive we look for the smallest error ei
+        // if ej is positive we look for the smallest errors ei
         if (ej > 0) {
             int i = -1; double ei = ej;
             for (int k = 0; k < a.length; k++) {
@@ -247,7 +247,7 @@ public class SequentialMinimalOptimization implements Trainer {
      * two indices
      * @param i the first indice
      * @param j the second
-     * @param ei the error for the second indice
+     * @param ei the errors for the second indice
      * @return true if we make progress
      */
     private final boolean takeStep(int i, int j, double ej) {
@@ -266,7 +266,7 @@ public class SequentialMinimalOptimization implements Trainer {
         double l, h;
         // the two target values multiplied together
         double s = yi * yj;
-        // the error for the first index
+        // the errors for the first index
         double ei = error(i);
         
         // depending on whether or not the target values are equal
@@ -361,7 +361,7 @@ public class SequentialMinimalOptimization implements Trainer {
         }
         
         // i and j are either bound now or 
-        // should have their error set to zero in the cache
+        // should have their errors set to zero in the cache
         if (ai > 0 && ai < c) {
             e[i] = 0;
         }
@@ -380,7 +380,7 @@ public class SequentialMinimalOptimization implements Trainer {
             w = examples.get(j).getData().times(tj).plus(w);          
         }
         
-        // update the error cache
+        // update the errors cache
         // for non bound examples not in the cache
         for (int k = 0; k < e.length; k++) {
             if (k != i && k != j && !isBound(k)) {
@@ -406,12 +406,12 @@ public class SequentialMinimalOptimization implements Trainer {
     
     /**
      * Calculate (or look up in the cached)
-     * the error for an example
-     * @param i the example to look up the error for
-     * @return the error
+     * the errors for an example
+     * @param i the example to look up the errors for
+     * @return the errors
      */
     private final double error(int i) {
-        // if it's not bound we use the error cache
+        // if it's not bound we use the errors cache
         if (!isBound(i)) {
             return e[i];
         } else {

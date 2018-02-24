@@ -34,7 +34,7 @@ public class ConvergenceTrainer implements Trainer {
     /**
      * Create a new convergence trainer
      * @param trainer the thrainer to use
-     * @param threshold the error threshold
+     * @param threshold the errors threshold
      * @param maxIterations the maximum iterations
      */
     public ConvergenceTrainer(Trainer trainer,
