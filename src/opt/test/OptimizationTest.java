@@ -4,12 +4,10 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 import java.nio.file.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Semaphore;
 
 import dist.DiscreteDependencyTree;
 import dist.DiscretePermutationDistribution;
@@ -38,11 +36,21 @@ import opt.ga.UniformCrossOver;
 import opt.prob.GenericProbabilisticOptimizationProblem;
 import opt.prob.MIMIC;
 import opt.prob.ProbabilisticOptimizationProblem;
-import shared.FixedIterationTrainer;
-
 
 
 class Analyze_Optimization_Test implements Runnable {
+
+    private class RunValue{
+        public double r = 0.0;
+        public double t = 0.0;
+        RunValue(double result, double time){
+            r = result;
+            t = time;
+        }
+    }
+
+    private static Semaphore writeAccess = new Semaphore(1);
+    private static Semaphore runPermit = new Semaphore(8);
 
     /** The number of copies each */
     private static final int COPIES_EACH = 4;
@@ -84,6 +92,11 @@ class Analyze_Optimization_Test implements Runnable {
 
     private void write_output_to_file(String output_dir, String file_name, String results, boolean final_result) {
         try {
+            writeAccess.acquire();
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        }
+        try {
             if (final_result) {
                 String augmented_output_dir = output_dir + "/" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
                 String full_path = augmented_output_dir + "/" + file_name;
@@ -107,7 +120,7 @@ class Analyze_Optimization_Test implements Runnable {
         catch (Exception e) {
             e.printStackTrace();
         }
-
+        writeAccess.release();
     }
     
     private double[][] buildPoints(int N) {
@@ -147,6 +160,9 @@ class Analyze_Optimization_Test implements Runnable {
 
     public void run() {
         try {
+            //wait for a permit to run
+            runPermit.acquire();
+
             EvaluationFunction ef = null;
             Distribution odd = null;
             NeighborFunction nf = null;
@@ -210,7 +226,10 @@ class Analyze_Optimization_Test implements Runnable {
             GeneticAlgorithmProblem gap = new GenericGeneticAlgorithmProblem(ef, odd, mf, cf);
             ProbabilisticOptimizationProblem pop = new GenericProbabilisticOptimizationProblem(ef, odd, df);
 
-            String results = "";
+            LinkedList<RunValue> resultList = new LinkedList<>();
+            LinkedList<Double> optimaList = new LinkedList<>();
+//            LinkedList<Double> resultTiming = new LinkedList<>();
+
             double optimal_value = -1;
             double start = System.nanoTime();
 
@@ -218,13 +237,12 @@ class Analyze_Optimization_Test implements Runnable {
                 case "RHC":
                     RandomizedHillClimbing rhc = new RandomizedHillClimbing(hcp);
                     for (int i = 0; i <= this.iterations; i++) {
-                        results += rhc.train() + "\n";
+                        resultList.add(new RunValue(rhc.train(), System.nanoTime() - start));
                     }
                     optimal_value = ef.value(rhc.getOptimal());
                     for (int i = 0; i < this.N; i++) {
-	                    results += rhc.getOptimal().getData().get(i) + ",";
+	                    optimaList.add(rhc.getOptimal().getData().get(i));
 	                }
-	                results += "\n";
                     break;
 
                 case "SA":
@@ -234,13 +252,12 @@ class Analyze_Optimization_Test implements Runnable {
                             hcp
                     );
                     for (int i = 0; i <= this.iterations; i++) {
-                        results += sa.train() + "\n";
+                        resultList.add(new RunValue(sa.train(), System.nanoTime() - start));
                     }
                     optimal_value = ef.value(sa.getOptimal());
                     for (int i = 0; i < this.N; i++) {
-	                    results += sa.getOptimal().getData().get(i) + ",";
+                        optimaList.add(sa.getOptimal().getData().get(i));
 	                }
-	                results += "\n";
                     break;
 
                 case "GA":
@@ -251,13 +268,12 @@ class Analyze_Optimization_Test implements Runnable {
                             gap
                     );
                     for (int i = 0; i <= this.iterations; i++) {
-                        results += ga.train() + "\n";
+                        resultList.add(new RunValue(ga.train(), System.nanoTime() - start));
                     }
                     optimal_value = ef.value(ga.getOptimal());
                     for (int i = 0; i < this.N; i++) {
-	                    results += ga.getOptimal().getData().get(i) + ",";
+	                    optimaList.add(ga.getOptimal().getData().get(i));
 	                }
-	                results += "\n";
                     break;
 
                 case "MIMIC":
@@ -266,46 +282,89 @@ class Analyze_Optimization_Test implements Runnable {
                             params.get("MIMIC_to_keep").intValue(),
                             pop
                     );
-                    results = "";
                     for (int i = 0; i <= this.iterations; i++) {
-                        results += mimic.train() + "\n";
+                        resultList.add(new RunValue(mimic.train(), System.nanoTime() - start));
                     }
                     optimal_value = ef.value(mimic.getOptimal());
                     for (int i = 0; i < this.N; i++) {
-	                    results += mimic.getOptimal().getData().get(i) + ",";
+	                    optimaList.add(mimic.getOptimal().getData().get(i));
 	                }
-	                results += "\n";
                     break;
             }
             
             double end = System.nanoTime();
             double timeSeconds = (end - start) / Math.pow(10,9);
-            
-            results += "\n" +
-                    "Problem: " + this.problem + "\n" +
-                    "Algorithm: " + this.algorithm + "\n" +
-                    "Num Items: " + this.N + "\n" +
-                    "Optimal Value: " + optimal_value + "\n" +
-                    "Time: " + timeSeconds + "s\n";
-            String final_result = "";
-            final_result =
-                    this.problem + "," +
-                    this.algorithm + "," +
-                    this.N + "," +
-                    this.iterations + "," +
-                    this.run + "," +
-                    timeSeconds + "," +
-                    optimal_value;
-            write_output_to_file(this.other_params.get("output_folder"), "final_results.csv", final_result, true);
-            String file_name =
-                    this.problem + "_" + this.algorithm + "_N_" + this.N +
-                    "_iter_" + this.iterations + "_run_" + this.run + ".csv";
-            write_output_to_file(this.other_params.get("output_folder"), file_name, results, false);
-            System.out.println(results);
+
+            StringBuilder baseLine = new StringBuilder();
+            baseLine.append(this.problem);
+            baseLine.append(",");
+            baseLine.append(this.algorithm);
+            baseLine.append(",");
+            baseLine.append(this.N);
+            baseLine.append(",");
+            baseLine.append(this.T);
+            baseLine.append(",");
+            String[] paramList = {"SA_initial_temperature",
+                    "SA_cooling_factor",
+                    "GA_population",
+                    "GA_mate_number",
+                    "GA_mutate_number",
+                    "MIMIC_samples",
+                    "MIMIC_to_keep"};
+            for(String p : paramList){
+                if(params.containsKey(p))
+                    baseLine.append(params.get(p));
+                else
+                    baseLine.append(0);
+                baseLine.append(",");
+            }
+            String lineStart = baseLine.toString();
+            StringBuilder sb = new StringBuilder();
+            for (RunValue r : resultList){
+                sb.append(lineStart);
+                sb.append(r.r);
+                baseLine.append(",");
+                sb.append(r.t);
+                sb.append("\n");
+            }
+
+            write_output_to_file(this.other_params.get("output_folder"), "problems_results.csv", sb.toString(), false);
+
+            baseLine.append(timeSeconds);
+            baseLine.append(",");
+            baseLine.append(iterations);
+            baseLine.append(",");
+            baseLine.append(optimal_value);
+            baseLine.append("\n");
+
+            write_output_to_file(this.other_params.get("output_folder"), "problems.csv", baseLine.toString(), false);
+
+//            results += "\n" +
+//                    "Problem: " + this.problem + "\n" +
+//                    "Algorithm: " + this.algorithm + "\n" +
+//                    "Num Items: " + this.N + "\n" +
+//                    "Optimal Value: " + optimal_value + "\n" +
+//                    "Time: " + timeSeconds + "s\n";
+//            String final_result = "";
+//            final_result =
+//                    this.problem + "," +
+//                    this.algorithm + "," +
+//                    this.N + "," +
+//                    this.iterations + "," +
+//                    this.run + "," +
+//                    timeSeconds + "," +
+//                    optimal_value;
+//            write_output_to_file(this.other_params.get("output_folder"), "final_results.csv", final_result, true);
+//            String file_name =
+//                    this.problem + "_" + this.algorithm + "_N_" + this.N +
+//                    "_iter_" + this.iterations + "_run_" + this.run + ".csv";
+//            write_output_to_file(this.other_params.get("output_folder"), file_name, results, false);
+//            System.out.println(results);
         }
         catch (Exception e) {
             e.printStackTrace();
         }
+        runPermit.release();
     }
 
     public void start () {
@@ -337,7 +396,7 @@ public class OptimizationTest {
         four_peaks_test_params.put("MIMIC_to_keep",10.);
 
         int[] N = {50};
-        int[] iterations = {50000, 50000, 50000, 50000};
+        int[] iterations = {5000, 5000, 5000, 5000};
         String[] algorithms = {"RHC", "SA", "GA", "MIMIC"};
         for (int i = 0; i < algorithms.length; i++) {
             for (int j = 0; j < N.length; j++) {
@@ -369,7 +428,7 @@ public class OptimizationTest {
         tsp_test_params.put("MIMIC_to_keep",100.);
 
         N = new int[]{50};
-        iterations = new int[]{50000, 50000, 50000, 50000};
+        iterations = new int[]{5000, 5000, 5000, 5000};
         for (int i = 0; i < algorithms.length; i++) {
             for (int j = 0; j < N.length; j++) {
 				for (int l = 0; l < num_runs; l++) {
@@ -399,7 +458,7 @@ public class OptimizationTest {
         knapsack_test_params.put("MIMIC_to_keep",100.);
 
         N = new int[]{50};
-        iterations = new int[]{50000, 50000, 50000, 50000};
+        iterations = new int[]{5000, 5000, 5000, 5000};
         for (int i = 0; i < algorithms.length; i++) {
             for (int j = 0; j < N.length; j++) {
 				for (int l = 0; l < num_runs; l++) {
