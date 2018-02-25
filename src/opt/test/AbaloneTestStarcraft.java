@@ -48,7 +48,11 @@ public class AbaloneTestStarcraft {
 
     private static DecimalFormat df = new DecimalFormat("0.000");
 
+    private static String outFileParticule = "";
+
     public static void main(String[] args) {
+        if(args.length > 1)
+            outFileParticule = args[1];
         LinkedList<OA> oa_list = new LinkedList<>();
 
         StringBuffer results = new StringBuffer();
@@ -108,7 +112,7 @@ public class AbaloneTestStarcraft {
                     + " seconds\nTesting time: " + df.format(testingTime) + " seconds\n";
             results.append(res);
         }
-        Utils.writeOutputToFile(outputDir, "StarcraftTest" + ".csv", results.toString());
+        Utils.writeOutputToFile(outputDir, "StarcraftTest" + outFileParticule + ".csv", results.toString());
         System.out.println(results);
 
         //write errors to csv file
@@ -153,7 +157,7 @@ public class AbaloneTestStarcraft {
                 sb.append('\n');
             }
         }
-        Utils.writeOutputToFile(outputDir, "StarcraftTestErrors.csv", sb.toString());
+        Utils.writeOutputToFile(outputDir, "StarcraftTestErrors" + outFileParticule + ".csv", sb.toString());
     }
 
     
