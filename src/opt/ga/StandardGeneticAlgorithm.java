@@ -20,7 +20,19 @@ public class StandardGeneticAlgorithm extends OptimizationAlgorithm {
      * The random number generator
      */
     private static final Random random = new Random();
-    
+
+    public int getPopulationSize() {
+        return populationSize;
+    }
+
+    public int getToMate() {
+        return toMate;
+    }
+
+    public int getToMutate() {
+        return toMutate;
+    }
+
     /**
      * The population size
      */

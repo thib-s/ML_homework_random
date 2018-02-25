@@ -1,5 +1,6 @@
 package opt.test;
 
+import func.nn.Layer;
 import func.nn.Link;
 import opt.*;
 import opt.example.*;
@@ -37,7 +38,7 @@ public class AbaloneTestStarcraft {
     }
 
 	private static String outputDir = "./OptimizationResults";
-    private static int inputLayer = 72, hiddenLayer = 35, outputLayer = 200, trainingIterations = 1000;
+    private static int inputLayer = 72, hiddenLayer = 35, outputLayer = 200, trainingIterations = 500;
     private static Instance[] instances = initializeInstances();
     private static BackPropagationNetworkFactory factory = new BackPropagationNetworkFactory();
     
@@ -112,13 +113,45 @@ public class AbaloneTestStarcraft {
 
         //write errors to csv file
         StringBuilder sb = new StringBuilder();
+        sb.append("Opt_name, nn_shape, t, cooling, population_size, toMate, toMutate, epoch, error\n");
         for(OA oa : oa_list) {
-            sb.append(oa.name);
-            for (double e: oa.errors) {
-                sb.append(",");
-                sb.append(e);
+            StringBuilder baseLine = new StringBuilder();
+            baseLine.append(oa.name);
+            baseLine.append(",");
+            for(Layer l : (ArrayList<Layer>) oa.nn.getHiddenLayers()){
+                baseLine.append(" ");
+                baseLine.append(l.getNodeCount() - 1);
             }
-            sb.append('\n');
+            baseLine.append(", ");
+            if (oa.algorithm instanceof SimulatedAnnealing){
+                SimulatedAnnealing alg = (SimulatedAnnealing) oa.algorithm;
+                baseLine.append(alg.getStartT());
+                baseLine.append(", ");
+                baseLine.append(alg.getCooling());
+                baseLine.append(", 0, 0, 0, ");
+            }
+            else if (oa.algorithm instanceof StandardGeneticAlgorithm){
+                baseLine.append("0 , 0, ");
+                StandardGeneticAlgorithm alg = (StandardGeneticAlgorithm) oa.algorithm;
+                baseLine.append(alg.getPopulationSize());
+                baseLine.append(", ");
+                baseLine.append(alg.getToMate());
+                baseLine.append(", ");
+                baseLine.append(alg.getToMutate());
+                baseLine.append(", ");
+            }
+            else{
+                baseLine.append("0, 0, 0, 0, 0, ");
+            }
+            String line_start = baseLine.toString();
+            for (int i=0 ; i < oa.errors.length ; i++) {
+                double e = oa.errors[i];
+                sb.append(line_start);
+                sb.append(i);
+                sb.append(", ");
+                sb.append(e);
+                sb.append('\n');
+            }
         }
         Utils.writeOutputToFile(outputDir, "StarcraftTestErrors.csv", sb.toString());
     }
