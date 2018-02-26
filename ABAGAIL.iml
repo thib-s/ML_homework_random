@@ -13,5 +13,6 @@
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="inheritedJdk" />
+    <orderEntry type="library" name="Python 3.6 interpreter library" level="application" />
   </component>
 </module>

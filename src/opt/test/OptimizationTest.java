@@ -114,7 +114,7 @@ class Analyze_Optimization_Test implements Runnable {
                 String full_path = output_dir + "/" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "/" + file_name;
                 Path p = Paths.get(full_path);
                 Files.createDirectories(p.getParent());
-                Files.write(p, results.getBytes());
+                Files.write(p, results.getBytes(), StandardOpenOption.APPEND);
             }
         }
         catch (Exception e) {
@@ -330,36 +330,16 @@ class Analyze_Optimization_Test implements Runnable {
 
             write_output_to_file(this.other_params.get("output_folder"), "problems_results.csv", sb.toString(), false);
 
-            baseLine.append(timeSeconds);
-            baseLine.append(",");
-            baseLine.append(iterations);
-            baseLine.append(",");
-            baseLine.append(optimal_value);
-            baseLine.append("\n");
+            StringBuilder generalLine = new StringBuilder();
+            generalLine.append(baseLine.toString());
+            generalLine.append(timeSeconds);
+            generalLine.append(",");
+            generalLine.append(iterations);
+            generalLine.append(",");
+            generalLine.append(optimal_value);
+            generalLine.append("\n");
 
-            write_output_to_file(this.other_params.get("output_folder"), "problems.csv", baseLine.toString(), false);
-
-//            results += "\n" +
-//                    "Problem: " + this.problem + "\n" +
-//                    "Algorithm: " + this.algorithm + "\n" +
-//                    "Num Items: " + this.N + "\n" +
-//                    "Optimal Value: " + optimal_value + "\n" +
-//                    "Time: " + timeSeconds + "s\n";
-//            String final_result = "";
-//            final_result =
-//                    this.problem + "," +
-//                    this.algorithm + "," +
-//                    this.N + "," +
-//                    this.iterations + "," +
-//                    this.run + "," +
-//                    timeSeconds + "," +
-//                    optimal_value;
-//            write_output_to_file(this.other_params.get("output_folder"), "final_results.csv", final_result, true);
-//            String file_name =
-//                    this.problem + "_" + this.algorithm + "_N_" + this.N +
-//                    "_iter_" + this.iterations + "_run_" + this.run + ".csv";
-//            write_output_to_file(this.other_params.get("output_folder"), file_name, results, false);
-//            System.out.println(results);
+            write_output_to_file(this.other_params.get("output_folder"), "problems.csv", generalLine.toString(), false);
         }
         catch (Exception e) {
             e.printStackTrace();
