@@ -114,7 +114,11 @@ class Analyze_Optimization_Test implements Runnable {
                 String full_path = output_dir + "/" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "/" + file_name;
                 Path p = Paths.get(full_path);
                 Files.createDirectories(p.getParent());
-                Files.write(p, results.getBytes(), StandardOpenOption.APPEND);
+                try {
+                    Files.write(p, results.getBytes(), StandardOpenOption.APPEND);
+                } catch (NoSuchFileException e){
+                    Files.write(p, results.getBytes(), StandardOpenOption.CREATE_NEW);
+                }
             }
         }
         catch (Exception e) {
