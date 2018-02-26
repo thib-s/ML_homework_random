@@ -327,7 +327,7 @@ class Analyze_Optimization_Test implements Runnable {
             for (RunValue r : resultList){
                 sb.append(lineStart);
                 sb.append(r.r);
-                baseLine.append(",");
+                sb.append(",");
                 sb.append(r.t);
                 sb.append("\n");
             }
@@ -335,7 +335,7 @@ class Analyze_Optimization_Test implements Runnable {
             write_output_to_file(this.other_params.get("output_folder"), "problems_results.csv", sb.toString(), false);
 
             StringBuilder generalLine = new StringBuilder();
-            generalLine.append(baseLine.toString());
+            generalLine.append(lineStart);
             generalLine.append(timeSeconds);
             generalLine.append(",");
             generalLine.append(iterations);
@@ -379,24 +379,49 @@ public class OptimizationTest {
         four_peaks_test_params.put("MIMIC_samples",50.);
         four_peaks_test_params.put("MIMIC_to_keep",10.);
 
+        LinkedList<Double[]> parmList = new LinkedList<>();
+        parmList.add(new Double[] {100., 95., 100., 50., 10., 50., 10.});
+        parmList.add(new Double[] {100., 85., 150., 50., 10., 60., 10.});
+        parmList.add(new Double[] {100., 75.,  50., 50., 10., 70., 10.});
+        parmList.add(new Double[] {100., 65., 100., 25., 10., 40., 10.});
+        parmList.add(new Double[] {100., 55., 150., 25., 10., 30., 10.});
+        parmList.add(new Double[] {100., 45.,  50., 25., 10., 20., 10.});
+
+        parmList.add(new Double[] {100., 90., 100., 50., 20., 50., 5.});
+        parmList.add(new Double[] {100., 80., 150., 50., 20., 60., 5.});
+        parmList.add(new Double[] {100., 70.,  50., 50., 20., 70., 5.});
+        parmList.add(new Double[] {100., 60., 100., 25., 20., 40., 5.});
+        parmList.add(new Double[] {100., 50., 150., 25., 20., 30., 5.});
+        parmList.add(new Double[] {100., 40.,  50., 25., 20., 20., 5.});
+
         int[] N = {50};
         int[] iterations = {5000, 5000, 5000, 5000};
         String[] algorithms = {"RHC", "SA", "GA", "MIMIC"};
         for (int i = 0; i < algorithms.length; i++) {
-            for (int j = 0; j < N.length; j++) {
-				for (int l = 0; l < num_runs; l++) {
-					new Analyze_Optimization_Test(
-							"four_peaks",
-							algorithms[i],
-							iterations[i],
-							four_peaks_test_params,
-							N[j],
-							N[j]/5, 
-							other_params,
-							l
-					).start();
-				}
+            for( Double[] param : parmList){
+                four_peaks_test_params.put("SA_initial_temperature",param[0]);
+                four_peaks_test_params.put("SA_cooling_factor",param[1]);
+                four_peaks_test_params.put("GA_population",param[2]);
+                four_peaks_test_params.put("GA_mate_number",param[3]);
+                four_peaks_test_params.put("GA_mutate_number",param[4]);
+                four_peaks_test_params.put("MIMIC_samples",param[5]);
+                four_peaks_test_params.put("MIMIC_to_keep",param[6]);
+                for (int j = 0; j < N.length; j++) {
+                    for (int l = 0; l < num_runs; l++) {
+                        new Analyze_Optimization_Test(
+                                "four_peaks",
+                                algorithms[i],
+                                iterations[i],
+                                four_peaks_test_params,
+                                N[j],
+                                N[j]/5,
+                                other_params,
+                                l
+                        ).start();
+                    }
+                }
             }
+
         }
 
         
@@ -414,19 +439,28 @@ public class OptimizationTest {
         N = new int[]{50};
         iterations = new int[]{5000, 5000, 5000, 5000};
         for (int i = 0; i < algorithms.length; i++) {
-            for (int j = 0; j < N.length; j++) {
-				for (int l = 0; l < num_runs; l++) {
-					new Analyze_Optimization_Test(
-							"tsp",
-							algorithms[i],
-							iterations[i],
-							tsp_test_params,
-							N[j],
-							N[j]/5,
-							other_params,
-							l
-					).start();
-				}
+            for( Double[] param : parmList) {
+                four_peaks_test_params.put("SA_initial_temperature", param[0]);
+                four_peaks_test_params.put("SA_cooling_factor", param[1]);
+                four_peaks_test_params.put("GA_population", param[2]);
+                four_peaks_test_params.put("GA_mate_number", param[3]);
+                four_peaks_test_params.put("GA_mutate_number", param[4]);
+                four_peaks_test_params.put("MIMIC_samples", param[5]);
+                four_peaks_test_params.put("MIMIC_to_keep", param[6]);
+                for (int j = 0; j < N.length; j++) {
+                    for (int l = 0; l < num_runs; l++) {
+                        new Analyze_Optimization_Test(
+                                "tsp",
+                                algorithms[i],
+                                iterations[i],
+                                tsp_test_params,
+                                N[j],
+                                N[j] / 5,
+                                other_params,
+                                l
+                        ).start();
+                    }
+                }
             }
         }
 
@@ -444,19 +478,28 @@ public class OptimizationTest {
         N = new int[]{50};
         iterations = new int[]{5000, 5000, 5000, 5000};
         for (int i = 0; i < algorithms.length; i++) {
-            for (int j = 0; j < N.length; j++) {
-				for (int l = 0; l < num_runs; l++) {
-					new Analyze_Optimization_Test(
-							"knapsack",    
-							algorithms[i],
-							iterations[i],
-							knapsack_test_params,
-							N[j],
-							N[j]/5, 
-							other_params,
-							l
-					).start();
-				}
+            for( Double[] param : parmList) {
+                four_peaks_test_params.put("SA_initial_temperature", param[0]);
+                four_peaks_test_params.put("SA_cooling_factor", param[1]);
+                four_peaks_test_params.put("GA_population", param[2]);
+                four_peaks_test_params.put("GA_mate_number", param[3]);
+                four_peaks_test_params.put("GA_mutate_number", param[4]);
+                four_peaks_test_params.put("MIMIC_samples", param[5]);
+                four_peaks_test_params.put("MIMIC_to_keep", param[6]);
+                for (int j = 0; j < N.length; j++) {
+                    for (int l = 0; l < num_runs; l++) {
+                        new Analyze_Optimization_Test(
+                                "knapsack",
+                                algorithms[i],
+                                iterations[i],
+                                knapsack_test_params,
+                                N[j],
+                                N[j] / 5,
+                                other_params,
+                                l
+                        ).start();
+                    }
+                }
             }
         } 
     }
