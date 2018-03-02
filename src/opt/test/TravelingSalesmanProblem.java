@@ -256,8 +256,9 @@ public class TravelingSalesmanProblem {
 //			params.put("iterations", 5000.);
 //			threads.add(new Thread(new tspOptimization(Algorithm.GA, new HashMap<String, Double>(params))));
 			double [] samples = {100., 200., 300.};
+			double [] proportions1 = {0.25, 0.5,  0.75};
 			for (double sample : samples) {
-				for (double prop: proportions) {
+				for (double prop: proportions1) {
 					params.put("MIMIC_samples", sample);
 					params.put("MIMIC_to_keep", sample*prop);
 					params.put("iterations", 1000.);
