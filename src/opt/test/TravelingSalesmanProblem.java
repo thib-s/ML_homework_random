@@ -75,7 +75,8 @@ public class TravelingSalesmanProblem {
 		}
 
 		private void tspOptimizationRHC() {
-			String results = "";//"iter, value, time\n";
+			String results = "";
+			String header = "iter, value, time\n";
 
 			NeighborFunction nf = new SwapNeighbor();
 			HillClimbingProblem hcp = new GenericHillClimbingProblem(ef, odd, nf);
@@ -92,12 +93,13 @@ public class TravelingSalesmanProblem {
 				}
 			}
 
-			Utils.writeOutputToFile(outputDir, "tspRHC.csv", results);
+			Utils.writeOutputToFile(outputDir, "tspRHC.csv", results, header);
 			System.out.println("  RHC terminated run " + params.get("run").intValue());
 		}
 
 		private void tspOptimizationSA() {
-			String results = "";//"iter, value, time, SA_initial_temperature, SA_cooling_factor\n";
+			String results = "";
+			String header = "iter, value, time, SA_initial_temperature, SA_cooling_factor\n";
 
 			NeighborFunction nf = new SwapNeighbor();
 			HillClimbingProblem hcp = new GenericHillClimbingProblem(ef, odd, nf);
@@ -118,12 +120,13 @@ public class TravelingSalesmanProblem {
 			}
 
 			Utils.writeOutputToFile(outputDir, "TSPSA_IT" + params.get("SA_initial_temperature") + "_CF"
-					+ params.get("SA_cooling_factor") + ".csv", results);
+					+ params.get("SA_cooling_factor") + ".csv", results, header);
 			System.out.println("  SA terminated run " + params.get("run").intValue());
 		}
 
 		private void tspOptimizationGA() {
-			String results = "";//"iter, value, time, GA_population, GA_mate_number, GA_mutate_number\n";
+			String results = "";
+			String header = "iter, value, time, GA_population, GA_mate_number, GA_mutate_number\n";
 
 
 			MutationFunction mf = new SwapMutation();
@@ -157,13 +160,14 @@ public class TravelingSalesmanProblem {
 			//Uncomment if wanting to varying the GA parameters
 			Utils.writeOutputToFile(outputDir,
 					"tspGA_POP" + ".csv",
-					results);
+					results, header);
 
 			System.out.println("  GA terminated run " + params.get("run").intValue());
 		}
 
 		private void tspOptimizationMIMIC() {
-			String results = "";//"iter, value, time, MIMIC_samples, MIMIC_to_keep\n";
+			String results = "";
+			String header = "iter, value, time, MIMIC_samples, MIMIC_to_keep\n";
 
 
 			Distribution df = new DiscreteDependencyTree(.1, ranges);
@@ -185,7 +189,7 @@ public class TravelingSalesmanProblem {
 			}
 
 			Utils.writeOutputToFile(outputDir, "tspMIMIC_SAM" + params.get("MIMIC_samples").intValue() + "_KEP"
-					+ params.get("MIMIC_to_keep").intValue() + ".csv", results);
+					+ params.get("MIMIC_to_keep").intValue() + ".csv", results, header);
 			System.out.println("  MIMIC terminated run " + params.get("run").intValue());
 		}
 
@@ -220,32 +224,46 @@ public class TravelingSalesmanProblem {
 			params.put("iterations", 5000.);
 			threads.add(new Thread(new tspOptimization(Algorithm.RHC, new HashMap<String, Double>(params))));
 
-			params.put("SA_initial_temperature", 1E12);
-			params.put("SA_cooling_factor", .95);
-			params.put("iterations", 5000.);
-			threads.add(new Thread(new tspOptimization(Algorithm.SA, new HashMap<String, Double>(params))));
+			double [] initTemps = {1E12, 1E10, 1E5};
+			double [] coolings = {.95, .9, .8};
+			for (double initTemp : initTemps){
+				for (double cooling : coolings) {
+					params.put("SA_initial_temperature", initTemp);
+					params.put("SA_cooling_factor", cooling);
+					params.put("iterations", 5000.);
+					threads.add(new Thread(new tspOptimization(Algorithm.SA, new HashMap<String, Double>(params))));
+				}
+			}
 
 			// Uncomment if wanting to vary the GA parameters
-	        double [] toMate = {50., 50., 50. , 100., 100., 100., 150., 150., 150.};
-	        double [] toMutate = {20., 40., 60., 20., 40., 60., 20., 40., 60.}; 
-	        for (int k = 0; k < toMate.length; k ++){
-			params.put("GA_population", 200.);
-			params.put("GA_mate_number", toMate[k]);
-			params.put("GA_mutate_number", toMutate[k]);
-			params.put("iterations", 5000.);
-			threads.add(new Thread(new tspOptimization(Algorithm.GA, new HashMap<String, Double>(params))));
-	        }
+	        double [] proportions = {0., 0.25, 0.5,  0.75, 1.};
+			double [] pops = {100., 200., 300., 400.};
+			for (double mateProp : proportions) {
+				for (double mutateProp : proportions) {
+					for (double pop : pops) {
+						params.put("GA_population", pop);
+						params.put("GA_mate_number", mateProp*pop);
+						params.put("GA_mutate_number", mutateProp*pop);
+						params.put("iterations", 5000.);
+						threads.add(new Thread(new tspOptimization(Algorithm.GA, new HashMap<String, Double>(params))));
+					}
+				}
+			}
 	        
 //	        params.put("GA_population", 200.);
 //			params.put("GA_mate_number", 100.);
 //			params.put("GA_mutate_number", 40.);
 //			params.put("iterations", 5000.);
 //			threads.add(new Thread(new tspOptimization(Algorithm.GA, new HashMap<String, Double>(params))));
-			
-			params.put("MIMIC_samples", 200.);
-			params.put("MIMIC_to_keep", 100.);
-			params.put("iterations", 1000.);
-			threads.add(new Thread(new tspOptimization(Algorithm.MIMIC, new HashMap<String, Double>(params))));
+			double [] samples = {100., 200., 300.};
+			for (double sample : samples) {
+				for (double prop: proportions) {
+					params.put("MIMIC_samples", sample);
+					params.put("MIMIC_to_keep", sample*prop);
+					params.put("iterations", 1000.);
+					threads.add(new Thread(new tspOptimization(Algorithm.MIMIC, new HashMap<String, Double>(params))));
+				}
+			}
 		}
 
 		System.out.println("Start to compute TSP Problems");
