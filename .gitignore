@@ -1,6 +1,8 @@
 *.class
+OptimizationResults
 .DS_Store
 bin/*
+bin-*
 ABAGAIL.jar
 .idea
 # Package Files #
