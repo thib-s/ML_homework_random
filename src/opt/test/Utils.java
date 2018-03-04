@@ -17,11 +17,10 @@ public class Utils {
 	public static synchronized void writeOutputToFile(String outputDir, String fileName, String string, String header) {
 		try {
 			String full_path = outputDir + "/" + new SimpleDateFormat("dd-MM-yyyy").format(new Date()) + "_" + fileName;
-			File f = new File(full_path);
-			if (!f.exists()) {
+			Path p = Paths.get(full_path);
+			if (!Files.exists(p)) {
 				string = header + string;
 			}
-			Path p = Paths.get(full_path);
 			Files.createDirectories(p.getParent());
 			Files.write(p, string.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 		} catch (Exception e) {
